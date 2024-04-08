@@ -1,0 +1,12 @@
+Package: skyplotr
+Type: Package
+Title: Plotting skyline models
+Version: 0.1.0
+Author: Mathieu Fourment
+Maintainer: Mathieu Fourment <mathieu.fourment@uts.edu.au>
+Description: Functions for plotting population size trajectories of coalescent
+    models from the skyline family.
+License: GPL-3.0
+URL: https://github.com/4ment/skyplotr
+Encoding: UTF-8
+LazyData: true
