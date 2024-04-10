@@ -1,12 +1,23 @@
 Package: skyplotr
 Type: Package
-Title: Plotting skyline models
+Title: Plotting coalescent models with piecewise population size trajectory
 Version: 0.1.0
-Author: Mathieu Fourment
+Authors@R: 
+    person(given="Mathieu", family="Fourment", email="mathieu.fourment@uts.edu.au", role = c("aut", "cre"),
+           comment = c(ORCID="0000-0001-8153-9822"))
 Maintainer: Mathieu Fourment <mathieu.fourment@uts.edu.au>
 Description: Functions for plotting population size trajectories of coalescent
     models from the skyline family.
-License: GPL-3.0
+License: GPL (>= 3)
 URL: https://github.com/4ment/skyplotr
+Imports:
+    ggplot2,
+    rlang,
+    scales
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 7.3.1
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
