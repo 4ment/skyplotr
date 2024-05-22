@@ -8,7 +8,7 @@
 
 ### Installation
 
-* Install latest development version from GitHub (requires [devtools](https://github.com/hadley/devtools) package):
+* Install the latest development version from GitHub (requires [devtools](https://github.com/hadley/devtools) package):
 
 ```r
 devtools::install_github("4ment/skyplotr")
@@ -16,7 +16,7 @@ devtools::install_github("4ment/skyplotr")
 
 ### Example
 
-`HCV.tsv` contains 1000 MCMC samples obtained from BEAST. This analysis involves a nucleotide alignment of Hepatitis C Virus (HCV), utilizing the piecewise-constant coalescent model. This model comprises 75 epochs with a cutoff set at 400.
+`HCV.tsv` contains 1000 MCMC samples obtained from BEAST. This analysis involves a nucleotide alignment of Hepatitis C Virus (HCV), utilizing the piecewise-constant coalescent model (aka skygrid). This model comprises 75 epochs with a cutoff set at 400.
 
 ```r
 library(dplyr)
@@ -29,12 +29,12 @@ root_height <- samples$treeModel.rootHeight
 log_pop_size <- select(samples, starts_with("skygrid.logPopSize"))
 cutoff <- samples$skygrid.cutOff[1]
 skygrid <- prepare_skygrid(root_height, log_pop_size, cutoff, age_of_youngest=1994)
-skygrid <-  mutate_at(skygrid, c("pop_size", "pop_size_low", "pop_size_high"), exp)
+skygrid <-  mutate(skygrid, across(all_of(c("trajectory", "trajectory_low", "trajectory_high"))), exp)
 
 plot_title <- ggtitle("Population size trajectory",
                       "with median and 95% intervals")
 
-skyplot(skygrid, fill="darkcyan") + plot_title
+skyplot(skygrid, fill="darkcyan") + plot_title + ylab("Effective population size")
 ```
 
 ![HCV-skygrid](images/HCV-skygrid.png)

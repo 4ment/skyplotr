@@ -8,9 +8,10 @@
 #' @param color_by character string; name of column for coloring the line.
 #' @param fill_by character string; name of column for filling the ribbon.
 #' @param group_by character string; name of column for grouping in facet.
-#' @param facet_args list; named list of arguments (other than `facets`) passed
-#'   to [ggplot2::facet_wrap()]. Sub-plots are superimposed if NULL and group_by
-#'   is specified.
+#' @param facet list or character string; named list of arguments passed
+#'   to [ggplot2::facet_wrap()] or [ggplot2::facet_grid()]. If facet is a
+#'   character string, facet_wrap is used with facet as the only argument.
+#'   Sub-plots are superimposed if NULL.
 #' @returns ggplot2 object.
 #' @import ggplot2 scales
 #' @importFrom rlang .data
@@ -23,18 +24,15 @@ skyplot <-
            fill = NULL,
            color_by = NULL,
            fill_by = NULL,
-           group_by = NULL,
-           facet_args = list()) {
-    by_analysis <- !is.null(color)
-
+           facet = NULL) {
     aes_line <- aes(
       x = .data$time,
-      y = .data$pop_size
+      y = .data$trajectory
     )
 
     aes_ribbon <- aes(
-      ymin = .data$pop_size_low,
-      ymax = .data$pop_size_high
+      ymin = .data$trajectory_low,
+      ymax = .data$trajectory_high
     )
 
     if (!is.null(color_by)) {
@@ -74,10 +72,20 @@ skyplot <-
         labels = trans_format("log10", math_format(10^.x))
       )
     }
-    if (!is.null(facet_args) & !is.null(group_by)) {
-      facet_args[["facets"]] <- vars(.data[[group_by]])
-      graph <- graph + do.call("facet_wrap", facet_args)
+
+    if (is.character(facet)) {
+      graph <- graph + do.call("facet_wrap", list(facets = vars(.data[[facet]])))
+    } else if (!is.null(facet)) {
+      if ("facets" %in% names(facet)) {
+        graph <- graph + do.call("facet_wrap", facet)
+      } else {
+        facet_args <- list(
+          rows = vars(.data[[facet[["rows"]]]]),
+          cols = vars(.data[[facet[["cols"]]]])
+        )
+        graph <- graph + do.call("facet_grid", facet_args)
+      }
     }
 
-    graph + xlab("Time") + ylab("Effective population size")
+    graph + xlab("Time")
   }

@@ -1,12 +1,12 @@
 #' Create a data.frame for plotting a skygrid model.
 #'
 #' @param height numeric vector; root height parameter.
-#' @param pop_size data.frame; population size parameters.
+#' @param parameters data.frame; parameters of the piecewise function.
 #' @param grid_height numeric; grid height (i.e. cutoff).
-#' @param trajectory character string; Trajectory of the population size.
+#' @param trajectory character string; Trajectory of the parameters.
 #' Either mean or median.
 #' @param ci numeric vector; the default c(0.025, 0.075) corresponds to the
-#'   95\% HPD of the population size.
+#'   95\% HPD of the parameters.
 #' @param age_of_youngest numeric; sampling time of the youngest taxon.
 #' @param max_height numeric; Either lower, upper, median or mean.
 #' @param range_time numeric vector; time range to plot. -1 if automatic.
@@ -15,15 +15,15 @@
 #' @export
 prepare_skygrid <-
   function(height,
-           pop_size,
+           parameters,
            grid_height,
            trajectory = c("median", "mean"),
            ci = c(0.025, 0.975),
            age_of_youngest = 0,
            max_height = c("lower", "upper", "median", "mean"),
            range_time = NULL) {
-    if (is.matrix(pop_size)) {
-      pop_size <- as.data.frame(pop_size)
+    if (is.matrix(parameters)) {
+      parameters <- as.data.frame(parameters)
     }
     if (is.data.frame(height)) {
       height <- as.vector(unlist(height))
@@ -33,9 +33,9 @@ prepare_skygrid <-
     max_height <- match.arg(max_height)
 
     traj <- switch(trajectory,
-      mean = sapply(pop_size, mean),
+      mean = sapply(parameters, mean),
       median = sapply(
-        pop_size,
+        parameters,
         quantile,
         simplify = T,
         probs = 0.5,
@@ -47,7 +47,7 @@ prepare_skygrid <-
     traj <- unname(traj)
 
     traj_ci <- unname(sapply(
-      pop_size,
+      parameters,
       quantile,
       probs = ci,
       name = F,
@@ -91,7 +91,7 @@ prepare_skygrid <-
       }
     }
 
-    x <- seq(0, grid_height, length.out = ncol(pop_size))
+    x <- seq(0, grid_height, length.out = ncol(parameters))
 
     if (age_of_youngest > 0) {
       x <- age_of_youngest - x
@@ -99,9 +99,9 @@ prepare_skygrid <-
 
     res <- as.data.frame(cbind(
       time = x,
-      pop_size = traj,
-      pop_size_low = traj_ci[1, ],
-      pop_size_high = traj_ci[2, ]
+      trajectory = traj,
+      trajectory_low = traj_ci[1, ],
+      trajectory_high = traj_ci[2, ]
     ))
 
     if (max_height > grid_height) {
@@ -109,9 +109,9 @@ prepare_skygrid <-
         res,
         list(
           max_time,
-          res$pop_size[nrow(res)],
-          res$pop_size_low[nrow(res)],
-          res$pop_size_high[nrow(res)]
+          res$trajectory[nrow(res)],
+          res$trajectory_low[nrow(res)],
+          res$trajectory_high[nrow(res)]
         )
       )
     }
