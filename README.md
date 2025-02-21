@@ -29,7 +29,7 @@ root_height <- samples$treeModel.rootHeight
 log_pop_size <- select(samples, starts_with("skygrid.logPopSize"))
 cutoff <- samples$skygrid.cutOff[1]
 skygrid <- prepare_skygrid(root_height, log_pop_size, cutoff, age_of_youngest=1994)
-skygrid <-  mutate(skygrid, across(all_of(c("trajectory", "trajectory_low", "trajectory_high"))), exp)
+skygrid <-  mutate(skygrid, across(all_of(c("trajectory", "trajectory_low", "trajectory_high")), exp))
 
 plot_title <- ggtitle("Population size trajectory",
                       "with median and 95% intervals")
